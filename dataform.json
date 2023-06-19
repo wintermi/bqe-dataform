@@ -1,0 +1,10 @@
+{
+  "defaultSchema": "bqe",
+  "assertionSchema": "DF_ASSERTIONS",
+  "warehouse": "bigquery",
+  "defaultDatabase": "winter-dataform",
+  "defaultLocation": "australia-southeast1",
+  "vars": {
+    "START_DATE": "2022-01-01"
+  }
+}
