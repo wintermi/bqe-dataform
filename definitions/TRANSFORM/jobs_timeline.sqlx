@@ -1,0 +1,29 @@
+config {
+  type: "table",
+  schema: dataform.projectConfig.defaultSchema,
+  bigquery: {
+    partitionBy: "DATE(period_start)",
+    clusterBy: ["project_id"]
+  },
+  assertions: {
+    uniqueKey: ["period_start", "project_id", "job_id"]
+  },
+  tags: ["TRANSFORM_DATA"]
+}
+
+
+SELECT
+    period_start
+  , project_id
+  , job_id
+  , period_slot_ms
+  , total_bytes_processed
+  , job_type
+  , statement_type
+  , job_creation_time
+  , job_start_time
+  , job_end_time
+  , job_state
+  , reservation_id
+  , pricing_model
+FROM ${ ref({ schema: dataform.defaultSchema, name: "stg_jobs_timeline" }) }
