@@ -5,6 +5,7 @@
   "defaultDatabase": "winter-dataform",
   "defaultLocation": "australia-southeast1",
   "vars": {
-    "START_DATE": "2022-01-01"
+    "START_DATE": "2022-01-01",
+    "EXPORT_GCS_BUCKET": "winter-data/bqe-dataform"
   }
 }
