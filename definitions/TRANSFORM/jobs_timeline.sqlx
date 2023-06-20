@@ -1,6 +1,7 @@
 config {
   type: "table",
   schema: dataform.projectConfig.defaultSchema,
+  dependencies: ["stg_jobs_timeline"],
   bigquery: {
     partitionBy: "DATE(period_start)",
     clusterBy: ["project_id"]

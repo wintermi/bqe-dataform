@@ -1,9 +1,9 @@
 config {
   type: "operations",
   schema: dataform.projectConfig.defaultSchema,
-  name: "export_jobs_timeline",
+  name: "collect_jobs_timeline",
   hasOutput: false,
-  tags: ["EXPORT_JOBS_TIMELINE"],
+  tags: ["COLLECT_JOBS_TIMELINE"],
 }
 
 
@@ -42,6 +42,8 @@ WHERE job_creation_time >= "${ dataform.projectConfig.vars.START_DATE }"
 EXPORT DATA
 OPTIONS (
   format = "CSV",
+  field_delimiter = "\t",
+  header = true,
   overwrite = true,
   uri = "gs://${ dataform.projectConfig.vars.EXPORT_GCS_BUCKET }/jobs_timeline/${ dataform.projectConfig.vars.PRIMARY_REGION }_*.csv"
 ) AS

@@ -1,38 +1,33 @@
 config {
-  type: "table",
+  hasOutput: true,
+  type: "operations",
   schema: dataform.projectConfig.defaultSchema,
-  assertions: {
-    uniqueKey: ["bq_region", "period_start", "project_id", "job_id"]
-  },
-  tags: ["TRANSFORM_DATA"]
+  dependencies: ["collect_jobs_timeline"],
+  tags: ["LOAD_DATA"]
 }
 
 
-SELECT
-    'australia-southeast1' as bq_region
-  , period_start
-  , project_id
-  , job_id
-  , period_slot_ms
-  , IF(state = 'DONE', total_bytes_processed, 0) AS total_bytes_processed
-  , job_type
-  , statement_type
-  , job_creation_time
-  , job_start_time
-  , job_end_time
-  , state AS job_state
-  , reservation_id
-  , CASE WHEN reservation_id IS NULL AND job_type = "QUERY"
-         THEN "On-Demand"
-         WHEN reservation_id IS NOT NULL AND reservation_id != "default-pipeline"
-         THEN "Reservations"
-    END AS pricing_model
-FROM `region-australia-southeast1.INFORMATION_SCHEMA.JOBS_TIMELINE_BY_ORGANIZATION`
-WHERE job_creation_time >= "${ dataform.projectConfig.vars.START_DATE }"
-
-  -- Avoid duplicate byte counting in parent and children jobs.
-  AND (statement_type != "SCRIPT" OR statement_type IS NULL)
-
-  -- Only Valid Reservations or On-Demand Slot Usage
-   AND (   (reservation_id IS NULL AND job_type = "QUERY")
-        OR (reservation_id IS NOT NULL AND reservation_id != "default-pipeline"))
+LOAD DATA OVERWRITE ${ self() }
+(
+    bq_region               STRING        NOT NULL
+  , period_start            TIMESTAMP     NOT NULL
+  , project_id              STRING        NOT NULL
+  , job_id                  STRING        NOT NULL
+  , period_slot_ms          INTEGER
+  , total_bytes_processed   INTEGER
+  , job_type                STRING
+  , statement_type          STRING
+  , job_creation_time       TIMESTAMP
+  , job_start_time          TIMESTAMP
+  , job_end_time            TIMESTAMP
+  , job_state               STRING
+  , reservation_id          STRING
+  , pricing_model           STRING
+)
+FROM FILES (
+  format = "CSV",
+  field_delimiter = "\t",
+  skip_leading_rows = 1,
+  allow_jagged_rows = true,
+  uris = ["gs://${ dataform.projectConfig.vars.EXPORT_GCS_BUCKET }/jobs_timeline/${ dataform.projectConfig.vars.PRIMARY_REGION }_*.csv"]
+);
