@@ -1,0 +1,9 @@
+config {
+  type: "operations",
+  schema: dataform.projectConfig.defaultSchema,
+  hasOutput: false,
+  tags: ["EXPORT_JOBS_TIMELINE"],
+}
+
+
+${ gen.export_region_jobs_timeline("australia-southeast1") }
