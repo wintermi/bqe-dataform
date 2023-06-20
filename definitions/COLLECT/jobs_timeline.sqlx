@@ -43,7 +43,7 @@ EXPORT DATA
 OPTIONS (
   format = "CSV",
   overwrite = true,
-  uri = "gs://${ dataform.projectConfig.vars.EXPORT_GCS_BUCKET }/jobs_timeline_${ dataform.projectConfig.vars.PRIMARY_REGION }_*.csv"
+  uri = "gs://${ dataform.projectConfig.vars.EXPORT_GCS_BUCKET }/jobs_timeline/${ dataform.projectConfig.vars.PRIMARY_REGION }_*.csv"
 ) AS
 SELECT
   *
