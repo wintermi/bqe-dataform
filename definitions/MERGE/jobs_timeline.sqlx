@@ -7,16 +7,16 @@ config {
     clusterBy: ["project_id"]
   },
   assertions: {
-    uniqueKey: ["bq_region", "period_start", "project_id", "job_id"]
+    uniqueKey: ["bq_region", "project_id", "period_start", "job_id"]
   },
-  tags: ["TRANSFORM_DATA"]
+  tags: ["MERGE_DATA"]
 }
 
 
 SELECT
     bq_region
-  , period_start
   , project_id
+  , period_start
   , job_id
   , period_slot_ms
   , total_bytes_processed

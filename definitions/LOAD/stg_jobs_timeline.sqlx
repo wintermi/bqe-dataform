@@ -10,8 +10,8 @@ config {
 LOAD DATA OVERWRITE ${ self() }
 (
     bq_region               STRING        NOT NULL
-  , period_start            TIMESTAMP     NOT NULL
   , project_id              STRING        NOT NULL
+  , period_start            TIMESTAMP     NOT NULL
   , job_id                  STRING        NOT NULL
   , period_slot_ms          INTEGER
   , total_bytes_processed   INTEGER

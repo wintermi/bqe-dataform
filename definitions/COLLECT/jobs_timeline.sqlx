@@ -10,8 +10,8 @@ config {
 CREATE TEMPORARY TABLE jobs_timeline_${ dataform.projectConfig.vars.PRIMARY_REGION } AS
 SELECT
     "${ dataform.projectConfig.vars.PRIMARY_REGION }" as region
-  , period_start
   , project_id
+  , period_start
   , job_id
   , period_slot_ms
   , IF(state = 'DONE', total_bytes_processed, 0) AS total_bytes_processed
