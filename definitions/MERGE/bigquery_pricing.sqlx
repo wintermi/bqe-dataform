@@ -1,0 +1,28 @@
+config {
+  type: "table",
+  schema: dataform.projectConfig.defaultSchema,
+  dependencies: ["stg_bigquery_pricing"],
+  assertions: {
+    uniqueKey: ["bq_region"]
+  },
+  tags: ["MERGE_DATA"]
+}
+
+
+SELECT
+    bq_region
+  , bq_region_name
+  , active_logical_storage
+  , long_term_logical_storage
+  , bq_enterprise_edition
+  , bq_enterprise_1_year
+  , bq_enterprise_3_years
+  , bq_enterprise_plus_edition
+  , bq_enterprise_plus_1_year
+  , bq_enterprise_plus_3_years
+  , bq_flat_rate_flex
+  , bq_standard_edition
+  , bq_flat_rate_annual
+  , bq_flat_rate_monthly
+  , bq_on_demand
+FROM ${ ref({ schema: dataform.defaultSchema, name: "stg_bigquery_pricing" }) }
