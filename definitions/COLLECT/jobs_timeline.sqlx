@@ -15,6 +15,7 @@ SELECT
   , job_id
   , period_slot_ms
   , IF(state = 'DONE', total_bytes_processed, 0) AS total_bytes_processed
+  , IF(state = 'DONE', total_bytes_billed, 0) AS total_bytes_billed
   , job_type
   , statement_type
   , job_creation_time

@@ -21,6 +21,7 @@ SELECT
   , usage_time
   , SUM(usage_slot_sec) AS total_usage_slot_ms
   , SUM(total_bytes_processed) AS total_bytes_processed
+  , SUM(total_bytes_billed) AS total_bytes_billed
   , ROUND(CEIL(MAX(usage_slot_sec) / 100000) * 100) AS max_slot_per_minute
   , ROUND(CEIL(IFNULL(MAX(IF(slot_rank = 2, usage_slot_sec, NULL))
                     , MAX(usage_slot_sec)) / 100000) * 100) AS second_largest_slot_per_minute
@@ -34,6 +35,7 @@ FROM (SELECT
         , usage_time
         , usage_slot_sec
         , total_bytes_processed
+        , total_bytes_billed
         , ROW_NUMBER() OVER (PARTITION BY bq_region
                                         , project_id
                                         , reservation_id
@@ -49,6 +51,7 @@ FROM (SELECT
               , TIMESTAMP_TRUNC(period_start, MINUTE) AS usage_time
               , IFNULL(SUM(period_slot_ms), 0) AS usage_slot_sec
               , IFNULL(SUM(total_bytes_processed), 0) AS total_bytes_processed
+              , IFNULL(SUM(total_bytes_billed), 0) AS total_bytes_billed
             FROM ${ ref({ schema: dataform.defaultSchema, name: "jobs_timeline" }) }
             GROUP BY bq_region
                    , project_id

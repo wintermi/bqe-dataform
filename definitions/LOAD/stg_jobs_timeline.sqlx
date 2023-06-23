@@ -15,6 +15,7 @@ LOAD DATA OVERWRITE ${ self() }
   , job_id                  STRING        NOT NULL
   , period_slot_ms          INTEGER
   , total_bytes_processed   INTEGER
+  , total_bytes_billed      INTEGER
   , job_type                STRING
   , statement_type          STRING
   , job_creation_time       TIMESTAMP
