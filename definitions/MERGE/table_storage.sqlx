@@ -1,0 +1,29 @@
+config {
+  type: "table",
+  schema: dataform.projectConfig.defaultSchema,
+  dependencies: ["stg_table_storage"],
+  bigquery: {
+    partitionBy: "snapshot_date",
+    clusterBy: ["project_id"]
+  },
+  assertions: {
+    uniqueKey: ["bq_region", "project_id", "snapshot_date"]
+  },
+  tags: ["MERGE_DATA"]
+}
+
+
+SELECT
+    bq_region
+  , project_id
+  , snapshot_date
+  , total_rows
+  , total_logical_bytes
+  , active_logical_bytes
+  , long_term_logical_bytes
+  , total_physical_bytes
+  , active_physical_bytes
+  , long_term_physical_bytes
+  , time_travel_physical_bytes
+  , fail_safe_physical_bytes
+FROM ${ ref({ schema: dataform.defaultSchema, name: "stg_table_storage" }) }

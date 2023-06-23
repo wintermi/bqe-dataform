@@ -1,0 +1,31 @@
+config {
+  hasOutput: true,
+  type: "operations",
+  schema: dataform.projectConfig.defaultSchema,
+  dependencies: ["collect_table_storage"],
+  tags: ["LOAD_DATA"]
+}
+
+
+LOAD DATA OVERWRITE ${ self() }
+(
+    bq_region                     STRING  NOT NULL
+  , project_id                    STRING  NOT NULL
+  , snapshot_date                 DATE    NOT NULL
+  , total_rows                    INT64
+  , total_logical_bytes           INT64
+  , active_logical_bytes          INT64
+  , long_term_logical_bytes       INT64
+  , total_physical_bytes          INT64
+  , active_physical_bytes         INT64
+  , long_term_physical_bytes      INT64
+  , time_travel_physical_bytes    INT64
+  , fail_safe_physical_bytes      INT64
+)
+FROM FILES (
+  format = "CSV",
+  field_delimiter = "\t",
+  skip_leading_rows = 1,
+  allow_jagged_rows = true,
+  uris = ["gs://${ dataform.projectConfig.vars.EXPORT_GCS_BUCKET }/table_storage/${ dataform.projectConfig.vars.PRIMARY_REGION }_*.csv"]
+);

@@ -1,0 +1,41 @@
+config {
+  type: "operations",
+  schema: dataform.projectConfig.defaultSchema,
+  name: "collect_table_storage",
+  hasOutput: false,
+  tags: ["COLLECT_TABLE_STORAGE"],
+}
+
+
+CREATE TEMPORARY TABLE table_storage_${ dataform.projectConfig.vars.PRIMARY_REGION } AS
+SELECT
+    "${ dataform.projectConfig.vars.PRIMARY_REGION }" AS bq_region
+  , project_id
+  , CURRENT_DATE() AS snapshot_date
+  , SUM(total_rows) AS total_rows
+  , SUM(total_logical_bytes) AS total_logical_bytes
+  , SUM(active_logical_bytes) AS active_logical_bytes
+  , SUM(long_term_logical_bytes) AS long_term_logical_bytes
+  , SUM(total_physical_bytes) AS total_physical_bytes
+  , SUM(active_physical_bytes) AS active_physical_bytes
+  , SUM(long_term_physical_bytes) AS long_term_physical_bytes
+  , SUM(time_travel_physical_bytes) AS time_travel_physical_bytes
+  , SUM(fail_safe_physical_bytes) AS fail_safe_physical_bytes
+FROM `region-${ dataform.projectConfig.vars.PRIMARY_REGION }.INFORMATION_SCHEMA.TABLE_STORAGE_BY_ORGANIZATION`
+GROUP BY bq_region
+       , project_id
+;
+
+
+EXPORT DATA
+OPTIONS (
+  format = "CSV",
+  field_delimiter = "\t",
+  header = true,
+  overwrite = true,
+  uri = "gs://${ dataform.projectConfig.vars.EXPORT_GCS_BUCKET }/table_storage/${ dataform.projectConfig.vars.PRIMARY_REGION }_*.csv"
+) AS
+SELECT
+  *
+FROM table_storage_${ dataform.projectConfig.vars.PRIMARY_REGION }
+;
