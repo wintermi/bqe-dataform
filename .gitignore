@@ -35,6 +35,7 @@ lerna-debug.log*
 *.old
 
 # Project Excludes
+SQL/*
 data/*
 !data/.gitkeep
 

@@ -9,7 +9,7 @@ config {
 
 CREATE TEMPORARY TABLE jobs_timeline_${ dataform.projectConfig.vars.PRIMARY_REGION } AS
 SELECT
-    "${ dataform.projectConfig.vars.PRIMARY_REGION }" as region
+    "${ dataform.projectConfig.vars.PRIMARY_REGION }" as bq_region
   , project_id
   , period_start
   , job_id
