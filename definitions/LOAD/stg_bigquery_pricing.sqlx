@@ -1,0 +1,36 @@
+config {
+  type: "table",
+  schema: dataform.projectConfig.defaultSchema,
+  assertions: {
+    uniqueKey: ["bq_region"]
+  },
+  tags: ["LOAD_DATA"]
+}
+
+
+js {
+
+const selectAll = bq.PRICING.map(bqPricing => {
+    return `SELECT
+        "${ bqPricing.bq_region }" AS bq_region
+      , "${ bqPricing.bq_region_name }" AS bq_region_name
+      , ${ bqPricing.active_logical_storage } AS active_logical_storage
+      , ${ bqPricing.long_term_logical_storage } AS long_term_logical_storage
+      , ${ bqPricing.bq_enterprise_edition } AS bq_enterprise_edition
+      , ${ bqPricing.bq_enterprise_1_year } AS bq_enterprise_1_year
+      , ${ bqPricing.bq_enterprise_3_years } AS bq_enterprise_3_years
+      , ${ bqPricing.bq_enterprise_plus_edition } AS bq_enterprise_plus_edition
+      , ${ bqPricing.bq_enterprise_plus_1_year } AS bq_enterprise_plus_1_year
+      , ${ bqPricing.bq_enterprise_plus_3_years } AS bq_enterprise_plus_3_years
+      , ${ bqPricing.bq_flat_rate_flex } AS bq_flat_rate_flex
+      , ${ bqPricing.bq_standard_edition } AS bq_standard_edition
+      , ${ bqPricing.bq_flat_rate_annual } AS bq_flat_rate_annual
+      , ${ bqPricing.bq_flat_rate_monthly } AS bq_flat_rate_monthly
+      , ${ bqPricing.bq_on_demand } AS bq_on_demand
+    `;
+}).join(`
+UNION ALL
+`);
+}
+
+${selectAll}
