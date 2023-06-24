@@ -12,10 +12,10 @@ config {
 SELECT
     bq_region
   , bq_region_name
-  , active_logical_storage
-  , long_term_logical_storage
-  , active_physical_storage
-  , long_term_physical_storage
+  , active_logical_storage_list_price
+  , long_term_logical_storage_list_price
+  , active_physical_storage_list_price
+  , long_term_physical_storage_list_price
   , bq_standard_edition
   , bq_enterprise_edition
   , bq_enterprise_1_year
