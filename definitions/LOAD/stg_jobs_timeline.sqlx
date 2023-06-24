@@ -13,9 +13,9 @@ LOAD DATA OVERWRITE ${ self() }
   , project_id              STRING        NOT NULL
   , period_start            TIMESTAMP     NOT NULL
   , job_id                  STRING        NOT NULL
-  , period_slot_ms          INTEGER
-  , total_bytes_processed   INTEGER
-  , total_bytes_billed      INTEGER
+  , period_slot_ms          INT64
+  , total_bytes_processed   INT64
+  , total_bytes_billed      INT64
   , job_type                STRING
   , statement_type          STRING
   , job_creation_time       TIMESTAMP

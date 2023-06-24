@@ -1,7 +1,7 @@
 config {
   type: "incremental",
   schema: dataform.projectConfig.vars.BASE_DATA,
-  dependencies: ["stg_table_storage"],
+  dependencies: ["stg_table_storage", "bigquery_pricing"],
   uniqueKey: ["bq_region", "project_id", "snapshot_date"],
   bigquery: {
     partitionBy: "snapshot_date",
@@ -16,17 +16,34 @@ config {
 
 
 SELECT
-    bq_region
-  , project_id
-  , snapshot_date
-  , total_rows
-  , total_logical_bytes
-  , active_logical_bytes
-  , long_term_logical_bytes
-  , total_physical_bytes
-  , active_physical_bytes
-  , long_term_physical_bytes
-  , time_travel_physical_bytes
-  , fail_safe_physical_bytes
-FROM ${ ref({ schema: dataform.projectConfig.vars.STAGING_DATA, name: "stg_table_storage" }) }
-${ when(incremental(), `WHERE snapshot_date = DATE "${ dataform.projectConfig.vars.SNAPSHOT_DATE }"`) }
+    ts.bq_region
+  , ts.project_id
+  , ts.snapshot_date
+  , ts.total_rows
+  , ts.total_logical_bytes
+  , ts.active_logical_bytes
+  , ts.long_term_logical_bytes
+  , ts.total_physical_bytes
+  , ts.active_physical_bytes
+  , ts.long_term_physical_bytes
+  , ts.time_travel_physical_bytes
+  , ts.fail_safe_physical_bytes
+  , ts.total_logical_gib
+  , ts.active_logical_gib
+  , ts.long_term_logical_gib
+  , ts.total_physical_gib
+  , ts.active_physical_gib
+  , ts.long_term_physical_gib
+  , ts.time_travel_physical_gib
+  , ts.fail_safe_physical_gib
+
+    -- Calculate the compression ratio and monthly list prices
+  , (1 - (ts.total_physical_bytes / ts.total_logical_bytes)) * 100 AS compression_ratio
+  , (ts.active_logical_gib * bqp.active_logical_storage_list_price) +
+    (ts.long_term_logical_gib * bqp.long_term_logical_storage_list_price) AS logical_storage_monthly_list_price
+  , (ts.active_physical_gib * bqp.active_physical_storage_list_price) +
+    (ts.long_term_physical_gib * bqp.long_term_physical_storage_list_price) AS physical_storage_monthly_list_price
+FROM ${ ref({ schema: dataform.projectConfig.vars.STAGING_DATA, name: "stg_table_storage" }) } AS ts
+  INNER JOIN ${ ref({ schema: dataform.projectConfig.vars.BASE_DATA, name: "bigquery_pricing" }) } AS bqp
+    ON  ts.bq_region = bqp.bq_region
+${ when(incremental(), `WHERE ts.snapshot_date = DATE "${ dataform.projectConfig.vars.SNAPSHOT_DATE }"`) }

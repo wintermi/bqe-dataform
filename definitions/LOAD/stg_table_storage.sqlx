@@ -9,9 +9,9 @@ config {
 
 LOAD DATA OVERWRITE ${ self() }
 (
-    bq_region                     STRING  NOT NULL
-  , project_id                    STRING  NOT NULL
-  , snapshot_date                 DATE    NOT NULL
+    bq_region                     STRING     NOT NULL
+  , project_id                    STRING     NOT NULL
+  , snapshot_date                 DATE       NOT NULL
   , total_rows                    INT64
   , total_logical_bytes           INT64
   , active_logical_bytes          INT64
@@ -21,6 +21,14 @@ LOAD DATA OVERWRITE ${ self() }
   , long_term_physical_bytes      INT64
   , time_travel_physical_bytes    INT64
   , fail_safe_physical_bytes      INT64
+  , total_logical_gib             FLOAT64
+  , active_logical_gib            FLOAT64
+  , long_term_logical_gib         FLOAT64
+  , total_physical_gib            FLOAT64
+  , active_physical_gib           FLOAT64
+  , long_term_physical_gib        FLOAT64
+  , time_travel_physical_gib      FLOAT64
+  , fail_safe_physical_gib        FLOAT64
 )
 FROM FILES (
   format = "CSV",
