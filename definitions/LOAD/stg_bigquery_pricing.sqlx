@@ -16,6 +16,9 @@ const selectAll = bq.PRICING.map(bqPricing => {
       , "${ bqPricing.bq_region_name }" AS bq_region_name
       , ${ bqPricing.active_logical_storage } AS active_logical_storage
       , ${ bqPricing.long_term_logical_storage } AS long_term_logical_storage
+      , ${ bqPricing.active_physical_storage } AS active_physical_storage
+      , ${ bqPricing.long_term_physical_storage } AS long_term_physical_storage
+      , ${ bqPricing.bq_standard_edition } AS bq_standard_edition
       , ${ bqPricing.bq_enterprise_edition } AS bq_enterprise_edition
       , ${ bqPricing.bq_enterprise_1_year } AS bq_enterprise_1_year
       , ${ bqPricing.bq_enterprise_3_years } AS bq_enterprise_3_years
@@ -23,9 +26,8 @@ const selectAll = bq.PRICING.map(bqPricing => {
       , ${ bqPricing.bq_enterprise_plus_1_year } AS bq_enterprise_plus_1_year
       , ${ bqPricing.bq_enterprise_plus_3_years } AS bq_enterprise_plus_3_years
       , ${ bqPricing.bq_flat_rate_flex } AS bq_flat_rate_flex
-      , ${ bqPricing.bq_standard_edition } AS bq_standard_edition
-      , ${ bqPricing.bq_flat_rate_annual } AS bq_flat_rate_annual
       , ${ bqPricing.bq_flat_rate_monthly } AS bq_flat_rate_monthly
+      , ${ bqPricing.bq_flat_rate_annual } AS bq_flat_rate_annual
       , ${ bqPricing.bq_on_demand } AS bq_on_demand
     `;
 }).join(`
