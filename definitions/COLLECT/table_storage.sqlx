@@ -11,7 +11,7 @@ CREATE TEMPORARY TABLE table_storage_${ dataform.projectConfig.vars.PRIMARY_REGI
 SELECT
     "${ dataform.projectConfig.vars.PRIMARY_REGION }" AS bq_region
   , project_id
-  , CURRENT_DATE() AS snapshot_date
+  , DATE "${ dataform.projectConfig.vars.SNAPSHOT_DATE }" AS snapshot_date
   , SUM(total_rows) AS total_rows
   , SUM(total_logical_bytes) AS total_logical_bytes
   , SUM(active_logical_bytes) AS active_logical_bytes

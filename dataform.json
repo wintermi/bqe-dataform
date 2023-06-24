@@ -6,6 +6,7 @@
   "defaultLocation": "australia-southeast1",
   "vars": {
     "START_DATE": "2022-01-01",
+    "SNAPSHOT_DATE": "2023-06-24",
     "PRIMARY_REGION": "australia-southeast1",
     "EXPORT_GCS_BUCKET": "winter-data/bqe-dataform"
   }

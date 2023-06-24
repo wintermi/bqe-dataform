@@ -1,10 +1,12 @@
 config {
-  type: "table",
+  type: "incremental",
   schema: dataform.projectConfig.defaultSchema,
   dependencies: ["stg_table_storage"],
+  uniqueKey: ["bq_region", "project_id", "snapshot_date"],
   bigquery: {
     partitionBy: "snapshot_date",
-    clusterBy: ["project_id"]
+    clusterBy: ["project_id"],
+    updatePartitionFilter: `snapshot_date = DATE "${ dataform.projectConfig.vars.SNAPSHOT_DATE }"`
   },
   assertions: {
     uniqueKey: ["bq_region", "project_id", "snapshot_date"]
@@ -27,3 +29,4 @@ SELECT
   , time_travel_physical_bytes
   , fail_safe_physical_bytes
 FROM ${ ref({ schema: dataform.defaultSchema, name: "stg_table_storage" }) }
+${ when(incremental(), `WHERE snapshot_date = DATE "${ dataform.projectConfig.vars.SNAPSHOT_DATE }"`) }

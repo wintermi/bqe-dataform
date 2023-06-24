@@ -30,6 +30,7 @@ SELECT
     END AS pricing_model
 FROM `region-${ dataform.projectConfig.vars.PRIMARY_REGION }.INFORMATION_SCHEMA.JOBS_TIMELINE_BY_ORGANIZATION`
 WHERE job_creation_time >= "${ dataform.projectConfig.vars.START_DATE }"
+  AND period_start >= "${ dataform.projectConfig.vars.START_DATE }"
 
   -- Avoid duplicate byte counting in parent and children jobs.
   AND (statement_type != "SCRIPT" OR statement_type IS NULL)
