@@ -2,6 +2,9 @@ config {
   type: "table",
   schema: dataform.projectConfig.vars.BASE_DATA,
   dependencies: ["stg_bigquery_pricing"],
+  bigquery: {
+    clusterBy: ["bq_region"],
+  },
   assertions: {
     uniqueKey: ["bq_region"]
   },
