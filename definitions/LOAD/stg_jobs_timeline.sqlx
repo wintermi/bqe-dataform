@@ -1,7 +1,7 @@
 config {
   hasOutput: true,
   type: "operations",
-  schema: dataform.projectConfig.defaultSchema,
+  schema: dataform.projectConfig.vars.STAGING_DATA,
   dependencies: ["collect_jobs_timeline"],
   tags: ["LOAD_DATA"]
 }

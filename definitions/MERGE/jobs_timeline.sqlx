@@ -1,6 +1,6 @@
 config {
   type: "incremental",
-  schema: dataform.projectConfig.defaultSchema,
+  schema: dataform.projectConfig.vars.BASE_DATA,
   dependencies: ["stg_jobs_timeline"],
   uniqueKey: ["bq_region", "project_id", "period_start", "job_id"],
   bigquery: {
@@ -31,5 +31,5 @@ SELECT
   , job_state
   , reservation_id
   , pricing_model
-FROM ${ ref({ schema: dataform.defaultSchema, name: "stg_jobs_timeline" }) }
+FROM ${ ref({ schema: dataform.projectConfig.vars.STAGING_DATA, name: "stg_jobs_timeline" }) }
 ${ when(incremental(), `WHERE period_start >= "${ dataform.projectConfig.vars.START_DATE }"`) }

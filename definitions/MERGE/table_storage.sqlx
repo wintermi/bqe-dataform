@@ -1,6 +1,6 @@
 config {
   type: "incremental",
-  schema: dataform.projectConfig.defaultSchema,
+  schema: dataform.projectConfig.vars.BASE_DATA,
   dependencies: ["stg_table_storage"],
   uniqueKey: ["bq_region", "project_id", "snapshot_date"],
   bigquery: {
@@ -28,5 +28,5 @@ SELECT
   , long_term_physical_bytes
   , time_travel_physical_bytes
   , fail_safe_physical_bytes
-FROM ${ ref({ schema: dataform.defaultSchema, name: "stg_table_storage" }) }
+FROM ${ ref({ schema: dataform.projectConfig.vars.STAGING_DATA, name: "stg_table_storage" }) }
 ${ when(incremental(), `WHERE snapshot_date = DATE "${ dataform.projectConfig.vars.SNAPSHOT_DATE }"`) }

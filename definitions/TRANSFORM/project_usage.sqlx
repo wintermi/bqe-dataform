@@ -1,6 +1,6 @@
 config {
   type: "table",
-  schema: dataform.projectConfig.defaultSchema,
+  schema: dataform.projectConfig.vars.BASE_DATA,
   dependencies: ["jobs_timeline"],
   bigquery: {
     partitionBy: "DATE(usage_time)",
@@ -52,7 +52,7 @@ FROM (SELECT
               , IFNULL(SUM(period_slot_ms), 0) AS usage_slot_sec
               , IFNULL(SUM(total_bytes_processed), 0) AS total_bytes_processed
               , IFNULL(SUM(total_bytes_billed), 0) AS total_bytes_billed
-            FROM ${ ref({ schema: dataform.defaultSchema, name: "jobs_timeline" }) }
+            FROM ${ ref({ schema: dataform.projectConfig.vars.BASE_DATA, name: "jobs_timeline" }) }
             GROUP BY bq_region
                    , project_id
                    , reservation_id

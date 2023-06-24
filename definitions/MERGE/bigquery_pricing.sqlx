@@ -1,6 +1,6 @@
 config {
   type: "table",
-  schema: dataform.projectConfig.defaultSchema,
+  schema: dataform.projectConfig.vars.BASE_DATA,
   dependencies: ["stg_bigquery_pricing"],
   assertions: {
     uniqueKey: ["bq_region"]
@@ -27,4 +27,4 @@ SELECT
   , bq_flat_rate_monthly
   , bq_flat_rate_annual
   , bq_on_demand
-FROM ${ ref({ schema: dataform.defaultSchema, name: "stg_bigquery_pricing" }) }
+FROM ${ ref({ schema: dataform.projectConfig.vars.STAGING_DATA, name: "stg_bigquery_pricing" }) }
