@@ -34,6 +34,7 @@ SELECT
 FROM `region-${ dataform.projectConfig.vars.PRIMARY_REGION }.INFORMATION_SCHEMA.TABLE_STORAGE_BY_ORGANIZATION`
 GROUP BY bq_region
        , project_id
+HAVING total_logical_bytes > 0
 ;
 
 
