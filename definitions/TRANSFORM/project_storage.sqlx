@@ -75,7 +75,7 @@ FROM (SELECT
         , SUM(long_term_physical_gib) AS long_term_physical_gib
         , SUM(time_travel_physical_gib) AS time_travel_physical_gib
         , SUM(fail_safe_physical_gib) AS fail_safe_physical_gib
-      FROM ${ ref({ schema: dataform.projectConfig.vars.STAGING_DATA, name: "stg_table_storage" }) }
+      FROM ${ ref({ schema: dataform.projectConfig.vars.BASE_DATA, name: "table_storage" }) }
       GROUP BY bq_region
              , project_id
              , table_type
