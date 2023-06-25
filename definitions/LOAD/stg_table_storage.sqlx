@@ -11,6 +11,9 @@ LOAD DATA OVERWRITE ${ self() }
 (
     bq_region                     STRING     NOT NULL
   , project_id                    STRING     NOT NULL
+  , table_schema                  STRING     NOT NULL
+  , table_name                    STRING     NOT NULL
+  , table_type                    STRING     NOT NULL
   , snapshot_date                 DATE       NOT NULL
   , total_rows                    INT64
   , total_logical_bytes           INT64

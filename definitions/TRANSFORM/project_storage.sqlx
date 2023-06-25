@@ -1,0 +1,84 @@
+config {
+  type: "table",
+  schema: dataform.projectConfig.vars.BASE_DATA,
+  dependencies: ["table_storage", "bigquery_pricing"],
+  bigquery: {
+    partitionBy: "snapshot_date",
+    clusterBy: ["project_id"],
+  },
+  assertions: {
+    uniqueKey: ["bq_region", "project_id", "table_type", "snapshot_date"]
+  },
+  tags: ["TRANSFORM_DATA"]
+}
+
+
+SELECT
+    ts.bq_region
+  , ts.project_id
+  , ts.table_type
+  , ts.snapshot_date
+  , ts.total_rows
+  , ts.total_logical_bytes
+  , ts.active_logical_bytes
+  , ts.long_term_logical_bytes
+  , ts.total_physical_bytes
+  , ts.active_physical_bytes
+  , ts.long_term_physical_bytes
+  , ts.time_travel_physical_bytes
+  , ts.fail_safe_physical_bytes
+  , ts.total_logical_gib
+  , ts.active_logical_gib
+  , ts.long_term_logical_gib
+  , ts.total_physical_gib
+  , ts.active_physical_gib
+  , ts.long_term_physical_gib
+  , ts.time_travel_physical_gib
+  , ts.fail_safe_physical_gib
+
+    -- Calculate the compression ratio
+  , SAFE_DIVIDE(ts.total_physical_bytes, ts.total_logical_bytes) AS total_compression_ratio
+  , SAFE_DIVIDE(ts.active_physical_bytes, ts.active_logical_bytes) AS active_compression_ratio
+  , SAFE_DIVIDE(ts.long_term_physical_bytes, ts.long_term_logical_bytes) AS long_term_compression_ratio
+
+    -- Calculate the logical monthly costs at list price
+  , (ts.active_logical_gib * bqp.active_logical_storage_list_price) +
+    (ts.long_term_logical_gib * bqp.long_term_logical_storage_list_price) AS total_logical_monthly_cost
+  , (ts.active_logical_gib * bqp.active_logical_storage_list_price) AS active_logical_monthly_cost
+  , (ts.long_term_logical_gib * bqp.long_term_logical_storage_list_price) AS long_term_logical_monthly_cost
+
+    -- Calculate the physical monthly costs at list price
+  , ((ts.active_physical_gib + ts.time_travel_physical_gib) * bqp.active_physical_storage_list_price) +
+    (ts.long_term_physical_gib * bqp.long_term_physical_storage_list_price) AS total_physical_monthly_cost
+  , (ts.active_physical_gib * bqp.active_physical_storage_list_price) AS active_physical_monthly_cost
+  , (ts.long_term_physical_gib * bqp.long_term_physical_storage_list_price) AS long_term_physical_monthly_cost
+  , (ts.time_travel_physical_gib * bqp.active_physical_storage_list_price) AS time_travel_physical_monthly_cost
+FROM (SELECT
+          bq_region
+        , project_id
+        , table_type
+        , snapshot_date
+        , SUM(total_rows) AS total_rows
+        , SUM(total_logical_bytes) AS total_logical_bytes
+        , SUM(active_logical_bytes) AS active_logical_bytes
+        , SUM(long_term_logical_bytes) AS long_term_logical_bytes
+        , SUM(total_physical_bytes) AS total_physical_bytes
+        , SUM(active_physical_bytes) AS active_physical_bytes
+        , SUM(long_term_physical_bytes) AS long_term_physical_bytes
+        , SUM(time_travel_physical_bytes) AS time_travel_physical_bytes
+        , SUM(fail_safe_physical_bytes) AS fail_safe_physical_bytes
+        , SUM(total_logical_gib) AS total_logical_gib
+        , SUM(active_logical_gib) AS active_logical_gib
+        , SUM(long_term_logical_gib) AS long_term_logical_gib
+        , SUM(total_physical_gib) AS total_physical_gib
+        , SUM(active_physical_gib) AS active_physical_gib
+        , SUM(long_term_physical_gib) AS long_term_physical_gib
+        , SUM(time_travel_physical_gib) AS time_travel_physical_gib
+        , SUM(fail_safe_physical_gib) AS fail_safe_physical_gib
+      FROM ${ ref({ schema: dataform.projectConfig.vars.STAGING_DATA, name: "stg_table_storage" }) }
+      GROUP BY bq_region
+             , project_id
+             , table_type
+             , snapshot_date) AS ts
+  INNER JOIN ${ ref({ schema: dataform.projectConfig.vars.BASE_DATA, name: "bigquery_pricing" }) } AS bqp
+    ON  ts.bq_region = bqp.bq_region

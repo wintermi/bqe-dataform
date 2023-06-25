@@ -11,30 +11,37 @@ CREATE TEMPORARY TABLE table_storage_${ dataform.projectConfig.vars.PRIMARY_REGI
 SELECT
     "${ dataform.projectConfig.vars.PRIMARY_REGION }" AS bq_region
   , project_id
+  , table_schema
+  , table_name
+  , table_type
   , DATE "${ dataform.projectConfig.vars.SNAPSHOT_DATE }" AS snapshot_date
   , SUM(total_rows) AS total_rows
   , SUM(total_logical_bytes) AS total_logical_bytes
   , SUM(active_logical_bytes) AS active_logical_bytes
   , SUM(long_term_logical_bytes) AS long_term_logical_bytes
   , SUM(total_physical_bytes) AS total_physical_bytes
-  , SUM(active_physical_bytes) AS active_physical_bytes
+  , SUM(active_physical_bytes - time_travel_physical_bytes) AS active_physical_bytes
   , SUM(long_term_physical_bytes) AS long_term_physical_bytes
   , SUM(time_travel_physical_bytes) AS time_travel_physical_bytes
   , SUM(fail_safe_physical_bytes) AS fail_safe_physical_bytes
 
     -- Calculate the Gibibyte values
-  , SUM(total_logical_bytes) / POW(1024, 3) AS total_logical_gib
-  , SUM(active_logical_bytes) / POW(1024, 3) AS active_logical_gib
-  , SUM(long_term_logical_bytes) / POW(1024, 3) AS long_term_logical_gib
-  , SUM(total_physical_bytes) / POW(1024, 3) AS total_physical_gib
-  , SUM(active_physical_bytes) / POW(1024, 3) AS active_physical_gib
-  , SUM(long_term_physical_bytes) / POW(1024, 3) AS long_term_physical_gib
-  , SUM(time_travel_physical_bytes) / POW(1024, 3) AS time_travel_physical_gib
-  , SUM(fail_safe_physical_bytes) / POW(1024, 3) AS fail_safe_physical_gib
+  , SUM(total_logical_bytes) / POWER(1024, 3) AS total_logical_gib
+  , SUM(active_logical_bytes) / POWER(1024, 3) AS active_logical_gib
+  , SUM(long_term_logical_bytes) / POWER(1024, 3) AS long_term_logical_gib
+  , SUM(total_physical_bytes) / POWER(1024, 3) AS total_physical_gib
+  , SUM(active_physical_bytes - time_travel_physical_bytes) / POWER(1024, 3) AS active_physical_gib
+  , SUM(long_term_physical_bytes) / POWER(1024, 3) AS long_term_physical_gib
+  , SUM(time_travel_physical_bytes) / POWER(1024, 3) AS time_travel_physical_gib
+  , SUM(fail_safe_physical_bytes) / POWER(1024, 3) AS fail_safe_physical_gib
 FROM `region-${ dataform.projectConfig.vars.PRIMARY_REGION }.INFORMATION_SCHEMA.TABLE_STORAGE_BY_ORGANIZATION`
 GROUP BY bq_region
        , project_id
+       , table_schema
+       , table_name
+       , table_type
 HAVING total_logical_bytes > 0
+   AND total_physical_bytes > 0
 ;
 
 
