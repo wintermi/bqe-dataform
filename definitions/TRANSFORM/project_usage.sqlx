@@ -22,9 +22,9 @@ SELECT
   , SUM(usage_slot_ms) AS total_usage_slot_ms
   , SUM(total_bytes_processed) AS total_bytes_processed
   , SUM(total_bytes_billed) AS total_bytes_billed
-  , ROUND(CEIL(MAX(usage_slot_ms) / 100000) * 100) AS max_slot_per_minute
+  , ROUND(CEIL(MAX(usage_slot_ms) / 100000) * 100) AS max_slot_per_min
   , ROUND(CEIL(IFNULL(MAX(IF(slot_rank = 2, usage_slot_ms, NULL))
-                    , MAX(usage_slot_ms)) / 100000) * 100) AS second_largest_slot_per_minute
+                    , MAX(usage_slot_ms)) / 100000) * 100) AS next_largest_slot_per_min
   , ARRAY_AGG(usage_slot_ms ORDER BY usage_time_sec ASC) AS usage_slot_ms
 FROM (SELECT
           bq_region
