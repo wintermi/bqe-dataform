@@ -31,3 +31,6 @@ WHERE pu.usage_time_min >= "${ dataform.projectConfig.vars.VIEW_START_DATE }"
 GROUP BY pu.bq_region
        , pu.project_id
        , commitment_option
+ORDER BY bq_region
+       , project_id
+       , commitment_option

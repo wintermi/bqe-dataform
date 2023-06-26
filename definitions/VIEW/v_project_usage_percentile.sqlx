@@ -27,3 +27,6 @@ FROM (SELECT
              , project_id) AS dt1
   CROSS JOIN UNNEST(GENERATE_ARRAY(1, 100)) AS percentile_index
 WHERE percentile_index >= 50
+ORDER BY bq_region
+       , project_id
+       , percentile_index
