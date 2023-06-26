@@ -1,0 +1,47 @@
+config {
+  type: "view",
+  schema: dataform.projectConfig.vars.BASE_DATA,
+  dependencies: ["project_storage"],
+  assertions: {
+    uniqueKey: ["bq_region", "project_id", "table_type", "snapshot_date"]
+  },
+  tags: ["VIEW_DATA"]
+}
+
+
+SELECT
+    bq_region
+  , project_id
+  , table_type
+  , snapshot_date
+  , total_rows
+  , total_logical_bytes
+  , active_logical_bytes
+  , long_term_logical_bytes
+  , total_physical_bytes
+  , active_physical_bytes
+  , long_term_physical_bytes
+  , time_travel_physical_bytes
+  , fail_safe_physical_bytes
+  , ROUND(total_logical_gib, 6) AS total_logical_gib
+  , ROUND(active_logical_gib, 6) AS active_logical_gib
+  , ROUND(long_term_logical_gib, 6) AS long_term_logical_gib
+  , ROUND(total_physical_gib, 6) AS total_physical_gib
+  , ROUND(active_physical_gib, 6) AS active_physical_gib
+  , ROUND(long_term_physical_gib, 6) AS long_term_physical_gib
+  , ROUND(time_travel_physical_gib, 6) AS time_travel_physical_gib
+  , ROUND(fail_safe_physical_gib, 6) AS fail_safe_physical_gib
+  , ROUND(total_compression_ratio, 6) AS total_compression_ratio
+  , ROUND(active_compression_ratio, 6) AS active_compression_ratio
+  , ROUND(long_term_compression_ratio, 6) AS long_term_compression_ratio
+  , ROUND(total_logical_monthly_cost, 6) AS total_logical_monthly_cost
+  , ROUND(active_logical_monthly_cost, 6) AS active_logical_monthly_cost
+  , ROUND(long_term_logical_monthly_cost, 6) AS long_term_logical_monthly_cost
+  , ROUND(total_physical_monthly_cost, 6) AS total_physical_monthly_cost
+  , ROUND(active_physical_monthly_cost, 6) AS active_physical_monthly_cost
+  , ROUND(long_term_physical_monthly_cost, 6) AS long_term_physical_monthly_cost
+  , ROUND(time_travel_physical_monthly_cost, 6) AS time_travel_physical_monthly_cost
+FROM ${ ref({ schema: dataform.projectConfig.vars.BASE_DATA, name: "project_storage" }) }
+WHERE snapshot_date IN (SELECT MAX(snapshot_date) FROM ${ ref({ schema: dataform.projectConfig.vars.BASE_DATA, name: "project_storage" }) })
+ORDER BY total_logical_bytes DESC
+
