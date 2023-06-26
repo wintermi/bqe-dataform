@@ -1,0 +1,28 @@
+config {
+  type: "view",
+  schema: dataform.projectConfig.vars.BASE_DATA,
+  dependencies: ["project_usage"],
+  assertions: {
+    uniqueKey: ["bq_region", "project_id", "percentile_index"]
+  },
+  tags: ["VIEW_DATA"]
+}
+
+
+SELECT
+    dt1.bq_region
+  , dt1.project_id
+  , percentile_index
+  , dt1.percentile_usage_slot_sec[ORDINAL(percentile_index)] AS percentile_usage_slot_sec
+  , CEILING(dt1.percentile_usage_slot_sec[OFFSET(percentile_index)] / 100000) * 100 AS percentile_usage_slots
+FROM (SELECT
+          bq_region
+        , project_id
+        , APPROX_QUANTILES(usage_slot_sec, 100) AS percentile_usage_slot_sec
+      FROM ${ ref({ schema: dataform.projectConfig.vars.BASE_DATA, name: "project_usage" }) },
+        UNNEST(usage_slot_sec) AS usage_slot_sec
+      WHERE usage_time BETWEEN "${ dataform.projectConfig.vars.VIEW_START_DATE }"
+                           AND "${ dataform.projectConfig.vars.VIEW_END_DATE }"
+      GROUP BY bq_region
+             , project_id) AS dt1
+  CROSS JOIN UNNEST(GENERATE_ARRAY(1, 100)) AS percentile_index
