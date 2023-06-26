@@ -23,42 +23,24 @@ SELECT
   , SUM(total_bytes_processed) AS total_bytes_processed
   , SUM(total_bytes_billed) AS total_bytes_billed
   , ROUND(CEIL(MAX(usage_slot_ms) / 100000) * 100) AS max_slot_per_min
-  , ROUND(CEIL(IFNULL(MAX(IF(slot_rank = 2, usage_slot_ms, NULL))
-                    , MAX(usage_slot_ms)) / 100000) * 100) AS next_largest_slot_per_min
   , ARRAY_AGG(usage_slot_ms ORDER BY usage_time_sec ASC) AS usage_slot_ms
 FROM (SELECT
           bq_region
         , project_id
-        , usage_time_sec
-        , usage_time_min
+        , TIMESTAMP_TRUNC(period_start, SECOND) AS usage_time_sec
+        , TIMESTAMP_TRUNC(period_start, MINUTE) AS usage_time_min
         , reservation_id
         , pricing_model
-        , usage_slot_ms
-        , total_bytes_processed
-        , total_bytes_billed
-        , ROW_NUMBER() OVER (PARTITION BY bq_region
-                                        , project_id
-                                        , usage_time_min
-                                        , reservation_id
-                                        , pricing_model
-                             ORDER BY usage_slot_ms DESC) AS slot_rank
-      FROM (SELECT
-                bq_region
-              , project_id
-              , TIMESTAMP_TRUNC(period_start, SECOND) AS usage_time_sec
-              , TIMESTAMP_TRUNC(period_start, MINUTE) AS usage_time_min
-              , reservation_id
-              , pricing_model
-              , IFNULL(SUM(period_slot_ms), 0) AS usage_slot_ms
-              , IFNULL(SUM(total_bytes_processed), 0) AS total_bytes_processed
-              , IFNULL(SUM(total_bytes_billed), 0) AS total_bytes_billed
-            FROM ${ ref({ schema: dataform.projectConfig.vars.BASE_DATA, name: "jobs_timeline" }) }
-            GROUP BY bq_region
-                   , project_id
-                   , usage_time_sec
-                   , usage_time_min
-                   , reservation_id
-                   , pricing_model) AS dt1) AS dt2
+        , IFNULL(SUM(period_slot_ms), 0) AS usage_slot_ms
+        , IFNULL(SUM(total_bytes_processed), 0) AS total_bytes_processed
+        , IFNULL(SUM(total_bytes_billed), 0) AS total_bytes_billed
+      FROM ${ ref({ schema: dataform.projectConfig.vars.BASE_DATA, name: "jobs_timeline" }) }
+      GROUP BY bq_region
+             , project_id
+             , usage_time_sec
+             , usage_time_min
+             , reservation_id
+             , pricing_model) AS dt1
 GROUP BY bq_region
        , project_id
        , usage_time_min
