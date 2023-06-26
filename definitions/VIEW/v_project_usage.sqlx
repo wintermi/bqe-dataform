@@ -2,6 +2,9 @@ config {
   type: "view",
   schema: dataform.projectConfig.vars.BASE_DATA,
   dependencies: ["project_usage"],
+  assertions: {
+    uniqueKey: ["bq_region", "project_id", "commitment_option"]
+  },
   tags: ["VIEW_DATA"]
 }
 
@@ -10,6 +13,12 @@ SELECT
     pu.bq_region
   , pu.project_id
   , commitment_option
+  , pu.reservation_id
+  , pu.pricing_model
+  , SUM(pu.total_usage_slot_ms) AS total_usage_slot_ms
+  , SUM(pu.total_bytes_processed) AS total_bytes_processed
+  , SUM(pu.total_bytes_billed) AS total_bytes_billed
+  , MAX(pu.max_slot_per_min) AS max_slots
   , TIMESTAMP_DIFF(TIMESTAMP_ADD(TIMESTAMP("${ dataform.projectConfig.vars.VIEW_END_DATE }"), INTERVAL 1 DAY)
                  , TIMESTAMP("${ dataform.projectConfig.vars.VIEW_START_DATE }"), MINUTE) AS n_sample_minutes
   , SUM(IF(pu.max_slot_per_min > commitment_option, pu.max_slot_per_min - commitment_option, 0)) AS autoscale_amount
@@ -31,6 +40,8 @@ WHERE pu.usage_time_min >= "${ dataform.projectConfig.vars.VIEW_START_DATE }"
 GROUP BY pu.bq_region
        , pu.project_id
        , commitment_option
+       , pu.reservation_id
+       , pu.pricing_model
 ORDER BY bq_region
        , project_id
        , commitment_option
