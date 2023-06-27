@@ -31,8 +31,11 @@ WHERE job_creation_time >= "${ dataform.projectConfig.vars.START_DATE }"
   AND (statement_type != "SCRIPT" OR statement_type IS NULL)
 
   -- Only Valid Reservations or On-Demand Slot Usage
-   AND (   (reservation_id IS NULL AND job_type = "QUERY")
-        OR (reservation_id IS NOT NULL AND reservation_id != "default-pipeline"))
+  AND (   (reservation_id IS NULL AND job_type = "QUERY")
+       OR (reservation_id IS NOT NULL AND reservation_id != "default-pipeline"))
+
+-- Ignore any jobs which have zero slot usage
+QUALIFY SUM(period_slot_ms) OVER (PARTITION BY bq_region, project_id, job_id) > 0
 ;
 
 
