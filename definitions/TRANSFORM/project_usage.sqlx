@@ -18,7 +18,6 @@ SELECT
   , project_id
   , usage_time_min
   , reservation_id
-  , pricing_model
   , SUM(usage_slot_ms) AS total_usage_slot_ms
   , SUM(total_bytes_processed) AS total_bytes_processed
   , SUM(total_bytes_billed) AS total_bytes_billed
@@ -30,7 +29,6 @@ FROM (SELECT
         , TIMESTAMP_TRUNC(period_start, SECOND) AS usage_time_sec
         , TIMESTAMP_TRUNC(period_start, MINUTE) AS usage_time_min
         , reservation_id
-        , pricing_model
         , IFNULL(SUM(period_slot_ms), 0) AS usage_slot_ms
         , IFNULL(SUM(total_bytes_processed), 0) AS total_bytes_processed
         , IFNULL(SUM(total_bytes_billed), 0) AS total_bytes_billed
@@ -39,10 +37,8 @@ FROM (SELECT
              , project_id
              , usage_time_sec
              , usage_time_min
-             , reservation_id
-             , pricing_model) AS dt1
+             , reservation_id) AS dt1
 GROUP BY bq_region
        , project_id
        , usage_time_min
        , reservation_id
-       , pricing_model

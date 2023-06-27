@@ -23,7 +23,6 @@ LOAD DATA OVERWRITE ${ self() }
   , job_end_time            TIMESTAMP
   , job_state               STRING
   , reservation_id          STRING
-  , pricing_model           STRING
 )
 FROM FILES (
   format = "CSV",

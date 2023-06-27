@@ -30,6 +30,5 @@ SELECT
   , job_end_time
   , job_state
   , reservation_id
-  , pricing_model
 FROM ${ ref({ schema: dataform.projectConfig.vars.STAGING_DATA, name: "stg_jobs_timeline" }) }
 ${ when(incremental(), `WHERE period_start >= "${ dataform.projectConfig.vars.START_DATE }"`) }

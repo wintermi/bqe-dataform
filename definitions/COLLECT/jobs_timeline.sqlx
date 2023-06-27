@@ -23,11 +23,6 @@ SELECT
   , job_end_time
   , state AS job_state
   , reservation_id
-  , CASE WHEN reservation_id IS NULL AND job_type = "QUERY"
-         THEN "On-Demand"
-         WHEN reservation_id IS NOT NULL AND reservation_id != "default-pipeline"
-         THEN "Reservations"
-    END AS pricing_model
 FROM `region-${ dataform.projectConfig.vars.PRIMARY_REGION }.INFORMATION_SCHEMA.JOBS_TIMELINE_BY_ORGANIZATION`
 WHERE job_creation_time >= "${ dataform.projectConfig.vars.START_DATE }"
   AND period_start >= "${ dataform.projectConfig.vars.START_DATE }"

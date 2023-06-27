@@ -14,7 +14,6 @@ SELECT
   , pu.project_id
   , commitment_option
   , pu.reservation_id
-  , pu.pricing_model
   , SUM(pu.total_usage_slot_ms) AS total_usage_slot_ms
   , SUM(pu.total_bytes_processed) AS total_bytes_processed
   , SUM(pu.total_bytes_billed) AS total_bytes_billed
@@ -41,7 +40,6 @@ GROUP BY pu.bq_region
        , pu.project_id
        , commitment_option
        , pu.reservation_id
-       , pu.pricing_model
 ORDER BY bq_region
        , project_id
        , commitment_option
