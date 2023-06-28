@@ -1,0 +1,21 @@
+config {
+  type: "operations",
+  schema: dataform.projectConfig.vars.BASE_DATA,
+  name: "WAITFOR",
+  hasOutput: true,
+  tags: ["CREATE_PROCEDURES"]
+}
+
+
+CREATE OR REPLACE PROCEDURE ${self()}(seconds INT64)
+BEGIN
+    DECLARE WAIT BOOLEAN DEFAULT true;
+    DECLARE DELAY_UNTIL DATETIME DEFAULT DATETIME_ADD(CURRENT_DATETIME, INTERVAL seconds SECOND);
+
+    WHILE WAIT = true DO
+      IF (CURRENT_DATETIME > DELAY_UNTIL) THEN
+         SET WAIT = false;
+      END IF;
+    END WHILE;
+END
+;
