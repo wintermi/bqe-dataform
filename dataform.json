@@ -5,8 +5,8 @@
   "defaultDatabase": "winter-dataform",
   "defaultLocation": "australia-southeast1",
   "vars": {
-    "START_DATE": "2022-01-01",
-    "SNAPSHOT_DATE": "2023-06-27",
+    "START_DATE": "2023-01-01",
+    "SNAPSHOT_DATE": "2023-06-29",
     "VIEW_START_DATE": "2023-05-01",
     "VIEW_END_DATE": "2023-05-31",
     "PRIMARY_REGION": "australia-southeast1",
