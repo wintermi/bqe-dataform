@@ -30,4 +30,5 @@ SELECT
   , bq_flat_rate_monthly
   , bq_flat_rate_annual
   , bq_on_demand
+  , bq_on_demand_after
 FROM ${ ref({ schema: dataform.projectConfig.vars.STAGING_DATA, name: "stg_bigquery_pricing" }) }

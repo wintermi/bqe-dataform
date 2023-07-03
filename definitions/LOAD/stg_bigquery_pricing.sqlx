@@ -29,6 +29,7 @@ const selectAll = bq.PRICING.map(bqp => {
       , ${ bqp.bq_flat_rate_monthly } AS bq_flat_rate_monthly
       , ${ bqp.bq_flat_rate_annual } AS bq_flat_rate_annual
       , ${ bqp.bq_on_demand } AS bq_on_demand
+      , (IFNULL(${ bqp.bq_on_demand }, 0) * 1.25) AS bq_on_demand_after
     `;
 }).join(`
 UNION ALL
