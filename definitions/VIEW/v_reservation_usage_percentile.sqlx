@@ -1,0 +1,32 @@
+config {
+  type: "view",
+  schema: dataform.projectConfig.vars.BASE_DATA,
+  dependencies: ["reservation_usage"],
+  assertions: {
+    uniqueKey: ["bq_region", "reservation_id", "percentile_index"]
+  },
+  tags: ["VIEW_DATA"]
+}
+
+
+SELECT
+    bq_region
+  , reservation_id
+  , percentile_index
+  , percentile_usage_slot_ms[OFFSET(percentile_index)] AS percentile_usage_slot_ms
+  , CEILING(percentile_usage_slot_ms[OFFSET(percentile_index)] / 100000) * 100 AS percentile_usage_slots
+FROM (SELECT
+          bq_region
+        , reservation_id
+        , APPROX_QUANTILES(usage_slot_ms, 100) AS percentile_usage_slot_ms
+      FROM ${ ref({ schema: dataform.projectConfig.vars.BASE_DATA, name: "reservation_usage" }) },
+        UNNEST(usage_slot_ms) AS usage_slot_ms
+      WHERE usage_time_min >= "${ dataform.projectConfig.vars.VIEW_START_DATE }"
+        AND usage_time_min <  TIMESTAMP_ADD(TIMESTAMP("${ dataform.projectConfig.vars.VIEW_END_DATE }"), INTERVAL 1 DAY)
+      GROUP BY bq_region
+             , reservation_id) AS dt1
+  CROSS JOIN UNNEST(GENERATE_ARRAY(1, 100)) AS percentile_index
+WHERE percentile_index >= 50
+ORDER BY bq_region
+       , reservation_id
+       , percentile_index
