@@ -1,5 +1,5 @@
 {
-  "name": "imdb-dataform",
+  "name": "bqe-dataform",
   "dependencies": {
     "@dataform/core": "^2.7.0"
   }
