@@ -1,6 +1,6 @@
 {
   "name": "bqe-dataform",
   "dependencies": {
-    "@dataform/core": "^2.7.0"
+    "@dataform/core": "^2.8.0"
   }
 }
