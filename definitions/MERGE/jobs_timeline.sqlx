@@ -1,6 +1,6 @@
 config {
   type: "incremental",
-  schema: dataform.projectConfig.vars.BASE_DATA,
+  schema: dataform.projectConfig.vars.TARGET_DATA,
   dependencies: ["stg_jobs_timeline"],
   uniqueKey: ["bq_region", "project_id", "period_start", "job_id"],
   bigquery: {

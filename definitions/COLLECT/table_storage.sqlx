@@ -1,6 +1,6 @@
 config {
   type: "operations",
-  schema: dataform.projectConfig.vars.BASE_DATA,
+  schema: dataform.projectConfig.vars.TARGET_DATA,
   name: "collect_table_storage",
   hasOutput: false,
   tags: ["COLLECT_TABLE_STORAGE"],

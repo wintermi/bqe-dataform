@@ -1,6 +1,6 @@
 config {
   type: "view",
-  schema: dataform.projectConfig.vars.BASE_DATA,
+  schema: dataform.projectConfig.vars.TARGET_DATA,
   dependencies: ["reservation_usage"],
   assertions: {
     uniqueKey: ["bq_region", "reservation_id", "commitment_option"]
@@ -20,12 +20,12 @@ SELECT
   , TIMESTAMP_DIFF(TIMESTAMP_ADD(TIMESTAMP("${ dataform.projectConfig.vars.VIEW_END_DATE }"), INTERVAL 1 DAY)
                  , TIMESTAMP("${ dataform.projectConfig.vars.VIEW_START_DATE }"), MINUTE) AS n_sample_minutes
   , SUM(IF(pu.max_slots_per_min > commitment_option, pu.max_slots_per_min - commitment_option, 0)) AS autoscale_amount
-FROM ${ ref({ schema: dataform.projectConfig.vars.BASE_DATA, name: "reservation_usage" }) } AS pu
+FROM ${ ref({ schema: dataform.projectConfig.vars.TARGET_DATA, name: "reservation_usage" }) } AS pu
   INNER JOIN (SELECT
                   bq_region
                 , reservation_id
                 , GENERATE_ARRAY(0, MAX(max_slots_per_min), 100) AS commitment_options
-              FROM ${ ref({ schema: dataform.projectConfig.vars.BASE_DATA, name: "reservation_usage" }) }
+              FROM ${ ref({ schema: dataform.projectConfig.vars.TARGET_DATA, name: "reservation_usage" }) }
               WHERE usage_time_min >= "${ dataform.projectConfig.vars.VIEW_START_DATE }"
                 AND usage_time_min <  TIMESTAMP_ADD(TIMESTAMP("${ dataform.projectConfig.vars.VIEW_END_DATE }"), INTERVAL 1 DAY)
               GROUP BY bq_region

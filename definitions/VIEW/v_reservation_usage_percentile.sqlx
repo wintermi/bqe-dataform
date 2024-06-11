@@ -1,6 +1,6 @@
 config {
   type: "view",
-  schema: dataform.projectConfig.vars.BASE_DATA,
+  schema: dataform.projectConfig.vars.TARGET_DATA,
   dependencies: ["reservation_usage"],
   assertions: {
     uniqueKey: ["bq_region", "reservation_id", "percentile_index"]
@@ -19,7 +19,7 @@ FROM (SELECT
           bq_region
         , reservation_id
         , APPROX_QUANTILES(usage_slot_ms, 100) AS percentile_usage_slot_ms
-      FROM ${ ref({ schema: dataform.projectConfig.vars.BASE_DATA, name: "reservation_usage" }) },
+      FROM ${ ref({ schema: dataform.projectConfig.vars.TARGET_DATA, name: "reservation_usage" }) },
         UNNEST(usage_slot_ms) AS usage_slot_ms
       WHERE usage_time_min >= "${ dataform.projectConfig.vars.VIEW_START_DATE }"
         AND usage_time_min <  TIMESTAMP_ADD(TIMESTAMP("${ dataform.projectConfig.vars.VIEW_END_DATE }"), INTERVAL 1 DAY)

@@ -1,6 +1,6 @@
 config {
   type: "table",
-  schema: dataform.projectConfig.vars.BASE_DATA,
+  schema: dataform.projectConfig.vars.TARGET_DATA,
   dependencies: ["table_storage", "bigquery_pricing"],
   bigquery: {
     partitionBy: "snapshot_date",
@@ -75,10 +75,10 @@ FROM (SELECT
         , SUM(long_term_physical_gib) AS long_term_physical_gib
         , SUM(time_travel_physical_gib) AS time_travel_physical_gib
         , SUM(fail_safe_physical_gib) AS fail_safe_physical_gib
-      FROM ${ ref({ schema: dataform.projectConfig.vars.BASE_DATA, name: "table_storage" }) }
+      FROM ${ ref({ schema: dataform.projectConfig.vars.TARGET_DATA, name: "table_storage" }) }
       GROUP BY bq_region
              , project_id
              , table_type
              , snapshot_date) AS ts
-  INNER JOIN ${ ref({ schema: dataform.projectConfig.vars.BASE_DATA, name: "bigquery_pricing" }) } AS bqp
+  INNER JOIN ${ ref({ schema: dataform.projectConfig.vars.TARGET_DATA, name: "bigquery_pricing" }) } AS bqp
     ON  ts.bq_region = bqp.bq_region

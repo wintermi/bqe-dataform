@@ -1,0 +1,14 @@
+dataformCoreVersion: 3.0.0-beta.6
+defaultProject: winter-dataform
+defaultLocation: australia-southeast1
+defaultDataset: bqe
+defaultAssertionDataset: bqe_assertions
+vars:
+  START_DATE: "2023-01-01"
+  SNAPSHOT_DATE: "2023-06-29"
+  VIEW_START_DATE: "2023-05-01"
+  VIEW_END_DATE: "2023-05-31"
+  PRIMARY_REGION: "australia-southeast1"
+  EXPORT_GCS_BUCKET: "winter-data/bqe-dataform"
+  STAGING_DATA: "bqe_staging"
+  TARGET_DATA: "bqe"

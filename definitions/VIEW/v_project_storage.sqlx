@@ -1,6 +1,6 @@
 config {
   type: "view",
-  schema: dataform.projectConfig.vars.BASE_DATA,
+  schema: dataform.projectConfig.vars.TARGET_DATA,
   dependencies: ["project_storage"],
   assertions: {
     uniqueKey: ["bq_region", "project_id", "table_type", "snapshot_date"]
@@ -41,7 +41,7 @@ SELECT
   , ROUND(active_physical_monthly_cost, 6) AS active_physical_monthly_cost
   , ROUND(long_term_physical_monthly_cost, 6) AS long_term_physical_monthly_cost
   , ROUND(time_travel_physical_monthly_cost, 6) AS time_travel_physical_monthly_cost
-FROM ${ ref({ schema: dataform.projectConfig.vars.BASE_DATA, name: "project_storage" }) }
-WHERE snapshot_date IN (SELECT MAX(snapshot_date) FROM ${ ref({ schema: dataform.projectConfig.vars.BASE_DATA, name: "project_storage" }) })
+FROM ${ ref({ schema: dataform.projectConfig.vars.TARGET_DATA, name: "project_storage" }) }
+WHERE snapshot_date IN (SELECT MAX(snapshot_date) FROM ${ ref({ schema: dataform.projectConfig.vars.TARGET_DATA, name: "project_storage" }) })
 ORDER BY total_logical_bytes DESC
 

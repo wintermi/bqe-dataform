@@ -1,6 +1,6 @@
 config {
   type: "incremental",
-  schema: dataform.projectConfig.vars.BASE_DATA,
+  schema: dataform.projectConfig.vars.TARGET_DATA,
   dependencies: ["stg_table_storage", "bigquery_pricing"],
   uniqueKey: ["bq_region", "project_id", "table_schema", "table_name", "table_type", "snapshot_date"],
   bigquery: {
